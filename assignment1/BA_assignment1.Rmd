@@ -1,0 +1,166 @@
+---
+title: "BA_assignment1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+# install.packages("dplyr")
+library(dplyr)
+# install.packages("tidyr")
+library(tidyr)
+
+data <- read.csv("Online_Retail.csv", stringsAsFactors = FALSE)
+
+#Answer to Question 1
+table(data$Country)
+
+division <- table(data$Country)/length(data$Country)
+percentage <- division*100
+percentage
+
+percentageDF <- data.frame(percentage)
+x <- percentageDF[percentageDF$Freq > 1,]
+print(x)
+
+
+#Answer to Question 2
+data$TransactionValue <- data$Quantity*data$UnitPrice
+TransactionValueDF <- data.frame(data$Country,data$TransactionValue)
+TransactionValueDF$data.Country <- as.factor(TransactionValueDF$data.Country)
+
+
+# sum(TransactionValueDF$data.TransactionValue)
+#just checking the total of money spent; 9,747,748
+
+#Answer to Question 3
+Spent_by_Country <- TransactionValueDF %>%
+  group_by(data.Country) %>%
+  summarise(Money_Spent = sum(data.TransactionValue))
+Spent_by_Country
+y <- Spent_by_Country[Spent_by_Country$Money_Spent > 130000,]
+y
+
+#Answer to Question 5
+germany <- Spent_by_Country[15,]
+germany <- as.numeric(germany)
+hist(germany, xlim = c(0,250000))
+
+
+#Code Shows Question 6
+data$CustomerID <- as.factor(data$CustomerID)
+Spent_by_Customer <- data %>%
+  group_by(CustomerID) %>%
+  summarise(Money_Spent = sum(TransactionValue))
+Spent_by_Customer
+
+number_trans <- data %>%
+  group_by(CustomerID) %>%
+  summarise(Num_Transactions = sum(Quantity))
+number_trans
+
+# sum(number_trans$Num_Transactions)
+
+number_transRemoveNA <- number_trans[-c(4373),]
+number_transRemoveNA
+
+which.max(number_transRemoveNA$Num_Transactions)
+ViewMaxNumTransactions <- number_trans[1704,]
+ViewMaxNumTransactions
+#customer ID 14646
+
+Spent_by_Customer_RemoveNA <- Spent_by_Customer[-c(4373),]
+Spent_by_Customer_RemoveNA
+
+
+which.max(Spent_by_Customer_RemoveNA$Money_Spent)
+viewmaxCustomer <- Spent_by_Customer[1704,]
+viewmaxCustomer
+#Customer 14646 is the most valuable with $279,489
+
+#This code right here answers Question 7
+colMeans(is.na(Spent_by_Customer))
+colMeans(is.na(data))
+
+#Question 8
+#This data frame here shows the number of transactions that are missing customer ID records by countries
+#The total number is 135,080 total missing values - below is a table showing missing transactions by countries - we can see that UK has the most transactions with missing customer ID's
+MissingTransByCountryDF <- data.frame(data$CustomerID, data$Country)
+
+MissingTransByCountryDF$data.Country<-as.factor(MissingTransByCountryDF$data.Country)
+
+missingbyTrans <- MissingTransByCountryDF %>%
+  group_by(country = data.Country) %>%
+  summarise(customerID = sum(is.na(data.CustomerID)))
+missingbyTrans
+
+#Code shows answer to Question 10
+# data$CustomerID <- as.factor(data$CustomerID)
+numTransCountry <- data %>%
+  group_by(Country) %>%
+  summarise(NumTrans = sum(Quantity))
+numTransCountry
+#shows number of transaction by country
+
+
+
+negativeNumber <- data
+negativeNumber[data<0] <- 0
+# negativeNumber
+
+zerotransactions <- subset(negativeNumber, TransactionValue == 0)
+
+zerotransactions <- subset(negativeNumber,Quantity == 0)
+
+groupZeroTrans <- zerotransactions%>%
+  group_by(Country)%>%
+  summarise(Num = length(Quantity))
+groupZeroTrans
+
+#Total transactions from france can be seen from the table numTransCountry and it is 110480
+#In the second table groupZeroTrans you can see the cancelled transactions which is 149
+#Return rate for french customers will be 149/110480 which equals 0.13% 
+
+product_money <- data%>%
+  group_by(StockCode)%>%
+  summarise(Price = sum(TransactionValue))
+product_money
+
+which.max(product_money$Price)
+highest_revenue <-product_money[4060,]
+highest_revenue
+
+
+CustomerIDnumbersDF <- data.frame(data$CustomerID)
+uniqueDF <- data.frame(unique(data$CustomerID,incomparables = FALSE))
+uniqueDF
+# in this code you can see that the dataframe has 4373 records - Those are the unique customer IDs, hence, there are 4373 unique customers
+
+
+
+
+
+```
+
