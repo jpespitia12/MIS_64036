@@ -1,6 +1,7 @@
 ---
 title: "assignment2_BA"
 output: html_document
+#Juan Espitia
 ---
 
 ```{r setup, include=FALSE}
@@ -33,6 +34,7 @@ library(dplyr)
 # install.packages("tidyr")
 library(tidyr)
 
+# Juan Espitia - Assignment 2
 
 #Question 1
 set.seed(2017) 
