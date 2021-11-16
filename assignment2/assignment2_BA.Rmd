@@ -1,0 +1,123 @@
+---
+title: "assignment2_BA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+
+# install.packages("dplyr")
+library(dplyr)
+# install.packages("tidyr")
+library(tidyr)
+
+
+#Question 1
+set.seed(2017) 
+X=runif(100)*10 
+Y=X*4+3.45 
+Y=rnorm(100)*0.29*Y+Y 
+
+#Question 1A
+plot(Y~X,xlab = 'X', ylab = 'Y', col='red')
+#Yes from the graph you can see that a linear model fits to explain Y and X
+
+#Question 1B & 1C
+model <- lm(Y~X)
+summary(model)
+model
+#The equation that explains based on Y and X we can get from the code above. The y intercept is 4.465 and the coefficient x is 3.611. So the equation is as follows; Y = 4.465 + 3.611x
+#Just as in the slides R-squared is a statistical measure of how close the data are to the fitted regression line
+# So in that case, the accuracy is .6517 = 65.17%
+
+cor(X,Y)^2
+#just like how it explained in the slides if you calculate the correlation of X and Y and take that to the power 2,you get the same answer as R-squared. .6517
+
+
+#Question 2A
+head(mtcars)
+plot(mtcars$hp~mtcars$wt, xlab = 'Weight', ylab = 'HP', col='red')
+jamesModel <- lm(hp~wt,data = mtcars)
+jamesModel
+summary(jamesModel)
+#James model R-squared is .4339. His model is 43.39% accurate
+
+plot(mtcars$hp~mtcars$mpg, xlab='MPG', ylab = 'HP', col='red')
+chrisModel <- lm(hp~mpg, data = mtcars)
+chrisModel
+summary(chrisModel)
+#Chris model R-squared is .6024. His model is 60.24% accurate
+
+#From comparing both James and Chris model we can conclude that Chris model is better, more accurate, than James.
+
+#Question 2B
+model2 <- lm(hp~cyl+mpg,data = mtcars)
+summary(model2)
+
+predictHP <- predict(model2, data.frame(cyl=4, mpg=22))
+predictHP
+#The estimated HP of a car with 4 calendar and mpg of 22 is 88HP
+
+
+#Question 3A
+# install.packages('mlbench') 
+library(mlbench) 
+data(BostonHousing) 
+
+set.seed(2017)
+model3 <- lm(medv~crim+zn+ptratio+chas, data = BostonHousing)
+model3
+summary(model3)
+#I do not think it is accurate as the R-squared is .3599 which is 35.99% accurate
+
+#Question 3B I
+# Chas has two possibilities because it is a factor of 2 which is 0 and 1. 
+# In the summary(model3) we can see that the coefficient of chas1 is 4.5893. The value that that represents in order to compare in $ is $4589. The one that is most expensive is chas1
+
+
+#Question 3B II
+
+#as you can see the coeffiecnt for the pupil teacher ratio is negative 1.49367. 
+#If we multiply 15*(-1.49367) = -22.040 *1000 = -22,040
+# If we multiply 18*(-1.49367) = -26.89 *1000 = -26,890
+
+#since it is a decrease the most expensive one would be ptratio = 15 since it lost less money, hence more expensive than the other.The difference is $4850
+
+
+#Question 3C
+  #Just like in the slides explained, the p value is the probability that the hypothesis that, that particular coefficient is equal to 0 is true. So if this probability is small, we can reject that hypothesis, and we can make a conclusion that there are statistically significant relationships between the variables.
+#As you can see from the summary of model 3 all the p values of the coefficients are small (close to zero) therefore they are all statistically important variables for house price.
+
+
+#Question 3D
+anova(model3)
+# As expressed in the slides we use anova to show us the importance of our variables. 
+    #1. crime
+    #2. ptratio
+    #3. zn
+    #4. chas
+
+```
+
